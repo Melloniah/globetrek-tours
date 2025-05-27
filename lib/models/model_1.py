@@ -10,6 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     email = Column(String)
+    
 
     bookings = relationship('Booking', back_populates='user', cascade='all, delete-orphan')
     reviews = relationship('Review', back_populates='user', cascade='all, delete-orphan')
@@ -58,7 +59,9 @@ class TourGuide(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
+    experience=Column(String)
     languages = Column(String)
+    rating=Column(Integer)
 
     destinations = relationship('Destination', back_populates='tour_guide')
     guide_destinations = relationship('GuideDestination', back_populates='guide') #this guy references the attribute guide in the model above
