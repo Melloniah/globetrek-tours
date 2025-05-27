@@ -81,4 +81,7 @@ class Destination(Base):
 
     # Create engine and sessionmaker
 engine = create_engine('sqlite:///lib/tours.db')
-SessionLocal = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine)
+session=Session()
+
+
