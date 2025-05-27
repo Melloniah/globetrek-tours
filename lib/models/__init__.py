@@ -1,4 +1,2 @@
-import sqlite3
+from .model_1 import Base, engine, SessionLocal, User, Review, Destination, Booking, TourGuide, GuideDestination
 
-CONN = sqlite3.connect('company.db')
-CURSOR = CONN.cursor()
