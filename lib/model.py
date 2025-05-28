@@ -8,8 +8,8 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    _name = Column(String, nullable=False)
-    _email = Column(String)
+    _name = Column("name", String, nullable=False)
+    _email = Column("email", String)
     
 
     bookings = relationship('Booking', back_populates='user')
@@ -24,7 +24,7 @@ class User(Base):
         self._name=value    
 
 
-     @property
+    @property
     def email(self):
         return self._email
 
@@ -40,17 +40,18 @@ class Booking(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name=Column(String)
-    _email = Column(String)  # User email if needed
+    _email = Column("email", String)  # User email if needed
     date = Column(Date)  # Use Date type for date columns
     people = Column(Integer)
-    _price = Column(Float)
+    _price = Column("price", Float)
 
     destination_id = Column(Integer, ForeignKey('destinations.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
     
     user = relationship('User', back_populates='bookings')
     destination = relationship('Destination', back_populates='bookings')
-    review=relationship('Review', back_populates='booking', cascade='all, delete-orphan') 
+
+    reviews=relationship('Review', back_populates='booking', cascade='all, delete-orphan') 
     #review and booking is one to many. A user can leave several reviews on one booking
 
     @property
@@ -80,7 +81,7 @@ class Review(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=True)
     rating = Column(Integer, nullable=False)
-    _comment = Column(String, nullable=False)  # Add a comment field for review text
+    _comment = Column("comment", String, nullable=False)  # Add a comment field for review text
     
 
     destination_id = Column(Integer, ForeignKey('destinations.id'))
@@ -119,9 +120,9 @@ class Destination(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
-    _price = Column(Float)
+    _price = Column("price", Float)
     duration = Column(Integer)
-    _location = Column(String)
+    _location = Column("location", String)
     description = Column(String)
 
 
@@ -130,7 +131,7 @@ class Destination(Base):
     #one to many:one destination can have many tourguides
     tour_guides= relationship('TourGuide', back_populates='destination', cascade='all, delete-orphan')
 
-     @property
+    @property
     def price(self):
         return self._price
 
@@ -151,8 +152,10 @@ class Destination(Base):
         self._location= value
 
 
-    # Create engine and sessionmaker
-engine = create_engine('sqlite:///lib/tours.db')
+ 
+
+
+engine = create_engine("sqlite:///lib/tours.db")  
 Session = sessionmaker(bind=engine)
 session=Session()
 

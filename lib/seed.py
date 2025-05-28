@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from model import Base, User, Review, Destination, Booking, TourGuide
+from lib.model import Base, User, Review, Destination, Booking, TourGuide
 from datetime import datetime
 
 date_str = '06-07-2025'
@@ -26,56 +26,56 @@ session.commit()
 destinations = [
     Destination(
         name="Mount Kenya",
-        price=15000,
+        price=28000,
         duration=3,
         location="Central Kenya",
         description="Experience the breathtaking beauty of Mount Kenya with guided hikes, wildlife spotting, and stunning alpine views."
     ),
     Destination(
         name="Watamu",
-        price=12000,
+        price=65000,
         duration=2,
         location="Coast",
         description="Relax in the white sandy beaches of Watamu, enjoy snorkeling in marine parks, and explore coastal Swahili culture."
     ),
     Destination(
         name="Kakamega Forest",
-        price=10000,
+        price=15000,
         duration=2,
         location="Western Kenya",
         description="Visit Kenya’s only tropical rainforest to see rare birds, butterflies, and ancient trees in a serene environment."
     ),
     Destination(
         name="Amboseli",
-        price=18000,
+        price=47000,
         duration=3,
         location="Southern Kenya",
         description="Explore Amboseli National Park with its iconic views of Mount Kilimanjaro and herds of elephants roaming the plains."
     ),
     Destination(
         name="Maasai Mara",
-        price=25000,
+        price=42000,
         duration=4,
         location="Southwestern Kenya",
         description="Witness the Great Migration, interact with Maasai culture, and go on thrilling game drives in the world-famous Mara."
     ),
     Destination(
         name="Diani",
-        price=14000,
+        price=50000,
         duration=3,
         location="South Coast",
         description="Enjoy luxury beach resorts, vibrant nightlife, and water sports in the tropical paradise of Diani."
     ),
     Destination(
         name="Jinja",
-        price=13000,
+        price=60000,
         duration=2,
         location="Eastern Uganda",
         description="Adventure capital of East Africa with white-water rafting, bungee jumping, and the source of the Nile."
     ),
     Destination(
         name="Kabaale Lake Bunyonyi",
-        price=16000,
+        price=70000,
         duration=3,
         location="Western Uganda",
         description="Discover crater lakes, rolling hills, and traditional Ugandan hospitality in the scenic Kabaale region."
