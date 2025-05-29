@@ -48,43 +48,66 @@ def filter_destinations_by_location():
 
     return filtered
 
-    # Get user input for a NEW BOOKING
-def book_destination(session):
-    # Collecting user info
-    dest_id = input("Please enter the ID of the destination you would like to book: ")
-    name = input("Please enter your name: ")
-    email = input("Please leave a valid email: ")
-    date_str = input("Please input the date you would like to travel (DD-MM-YYYY): ")
-    try:
-        travel_date = datetime.strptime(date_str, "%d-%m-%Y").date()
-    except ValueError:
-        print("❌ Invalid date format. Please use DD-MM-YYYY.")
-        return
+# helpers function fr creeating user
 
-    try:
-        people = int(input("Please input the number of people travelling: "))
-    except ValueError:
-        print("❌ Please enter a valid number of people.")
-        return
-
-    print("Note: Price shown on destination is per person.\n")
-
-    #  Get or create user
-    email = email.strip().lower()
+def get_or_create_user(session, name, email):
     user = session.query(User).filter_by(email=email).first()
-    if not user:
-        user = User(name=name, email=email)
+    if user:
+        # Update the user's name if it's missing or empty
+        if not user.name or user.name.strip() == "":
+            user.name = name.strip().title()
+            session.commit()
+        print(f"Welcome back, {user.name}!")
+        return user
+    else:
+        # Create new user with name and email
+        user = User(name=name.strip().title(), email=email.strip().lower())
         session.add(user)
         session.commit()
+        print(f"Welcome, {user.name}!")
+        return user
+
+
+
+def book_destination(session):
+    
 
     try:
-        # Confirming the chosen destination
+        # Step 1: Select destination
+        dest_id = input("Please enter the ID of the destination you would like to book: ").strip()
         destination = session.query(Destination).filter_by(id=int(dest_id)).first()
         if not destination:
             print("Destination not found.")
             return
 
-        # Ask if user wants a tour guide
+        # Step 2: Identify user by email and name
+        email = input("Please enter a valid email: ").strip().lower()
+        name = input("Please enter your name: ").strip()
+
+        # Step 3: Get or create user
+        user = get_or_create_user(session, name, email)
+
+        # Step 4: Ask for travel date
+        date_str = input("Please input the date you would like to travel (DD-MM-YYYY): ").strip()
+        try:
+            travel_date = datetime.strptime(date_str, "%d-%m-%Y").date()
+        except ValueError:
+            print("Invalid date format. Please use DD-MM-YYYY.")
+            return
+
+        # Step 5: Ask for number of people
+        try:
+            people = int(input("Please input the number of people travelling: ").strip())
+            if people < 1:
+                print("Number of people must be at least 1.")
+                return
+        except ValueError:
+            print("Please enter a valid number of people.")
+            return
+
+        print("Note: Price shown on destination is per person.\n")
+
+        # Step 6: Tour guide logic
         wants_guide = input("Would you like a tour guide for this trip? (yes/no): ").strip().lower()
         selected_guide = None
 
@@ -94,12 +117,11 @@ def book_destination(session):
                 print("\nAvailable Tour Guides:")
                 for guide in guides:
                     print(f"{guide.id}: {guide.name} - {guide.experience} years experience - Fee: Ksh {guide.fee}")
-
                 try:
-                    guide_id = int(input("Enter the ID of the tour guide you'd like to book: "))
+                    guide_id = int(input("Enter the ID of the tour guide you'd like to book: ").strip())
                     selected_guide = session.query(TourGuide).filter_by(id=guide_id, destination_id=destination.id).first()
                     if selected_guide:
-                        print(f"\nAssigning tour guide: {selected_guide.name} - {selected_guide.experience}  experience - Fee: Ksh {selected_guide.fee}")
+                        print(f"\nAssigning tour guide: {selected_guide.name} - {selected_guide.experience} years experience - Fee: Ksh {selected_guide.fee}")
                     else:
                         print("Invalid tour guide selection. Proceeding without a guide.")
                 except ValueError:
@@ -107,12 +129,12 @@ def book_destination(session):
             else:
                 print("Sorry, there are no tour guides available for this destination.")
 
-        # Calculate total price
+        # Step 7: Calculate total cost
         base_cost = destination.price * people
         guide_fee = selected_guide.fee if selected_guide else 0
         total_price = base_cost + guide_fee
 
-        # Create booking
+        # Step 8: Create booking record
         new_booking = Booking(
             user_id=user.id,
             destination_id=destination.id,
@@ -122,21 +144,20 @@ def book_destination(session):
             price=total_price,
             tour_guide_id=selected_guide.id if selected_guide else None
         )
-
         session.add(new_booking)
         session.commit()
 
-        # Confirmation
+        # Step 9: Confirm booking
         print(f"\n🎉 Booking confirmed for {destination.name} on {travel_date} for {people} people!")
         print(" Breakdown:")
         print(f" - Base cost (Ksh {destination.price} x {people}): Ksh {base_cost}")
         if selected_guide:
             print(f" - Tour guide fee ({selected_guide.name}): Ksh {guide_fee}")
-        print(f" Total price: Ksh {total_price}")
+        print(f" ✅ Total price: Ksh {total_price}")
 
     except Exception as e:
         session.rollback()
-        print(" Booking failed:", e)
+        print("❌ Booking failed:", e)
 
 def view_user_bookings(session):
     email = input("Enter your email to view your bookings: ").strip().lower()
@@ -261,8 +282,57 @@ def updating_a_booking(session):
     except Exception as e:
         session.rollback()
         print(" Failed to update booking:", e)
+        #deleting a booking
+def delete_booking(session):
+    email = input("Please enter your email to see your current bookings: ").strip().lower()
 
+    # Find user by email
+    user = session.query(User).filter(User._email.ilike(email)).first()
+    if not user:
+        print("No user found matching that email")
+        return
 
+    # Find bookings for that user
+    bookings = session.query(Booking).filter_by(user_id=user.id).all()
+    if not bookings:
+        print("No bookings found for that user")
+        return
+
+    # Display bookings
+    print("\nYour current bookings are:")
+    for index, booking in enumerate(bookings, start=1):
+        dest = booking.destination.name
+        date = booking.date
+        people = booking.people
+        print(f"{index}, Destination: {dest} Date: {date} People: {people}")
+
+    # User selects booking to delete
+    choice = input("Select the number of booking you want to delete: ")
+
+    try:
+        choice = int(choice)
+        if choice < 1 or choice > len(bookings):
+            print("Invalid selection")
+            return
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return
+
+    booking_to_delete = bookings[choice - 1]  # zero-based index
+
+    confirm = input(f"Are you sure you want to delete booking to {booking_to_delete.destination.name} on {booking_to_delete.date}? (yes/no): ").strip().lower()
+    if confirm != "yes":
+        print("Deleting the booking cancelled")
+        return
+
+    try:
+        session.delete(booking_to_delete)
+        session.commit()
+        print("Booking was deleted successfully")
+    except Exception as e:
+        session.rollback()
+        print("Failed to delete the booking:", e)
+      
 
 
 
@@ -276,6 +346,7 @@ def main_menu():
         print("4. View all users booked")
         print("5. View bookings")
         print("6. Update bookings")
+        print("7. Delete bookings")
 
         choice = input("Enter your choice: ")
 
@@ -292,6 +363,8 @@ def main_menu():
         elif choice == "6":
             updating_a_booking(session)
         elif choice == "7":
+            delete_booking(session)
+        elif choice == "8":
             print(f"GoodBye")             
             break
         else:

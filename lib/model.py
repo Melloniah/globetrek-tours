@@ -39,18 +39,21 @@ class Booking(Base):
     __tablename__ = 'bookings'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name=Column(String)
+    name=Column(String, nullable=False)
     _email = Column("email", String)  # User email if needed
     date = Column(Date)  # Use Date type for date columns
     people = Column(Integer)
     _price = Column("price", Float)
 
-    tour_guide_id = Column(Integer, ForeignKey('tour_guides.id'), nullable=True)
-    destination_id = Column(Integer, ForeignKey('destinations.id'))
-    user_id = Column(Integer, ForeignKey('users.id'))
     
+    user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship('User', back_populates='bookings')
+
+    destination_id = Column(Integer, ForeignKey('destinations.id'))
     destination = relationship('Destination', back_populates='bookings')
+
+
+    tour_guide_id = Column(Integer, ForeignKey('tour_guides.id'), nullable=True)
     tour_guide = relationship("TourGuide", back_populates="bookings")
 
     reviews=relationship('Review', back_populates='booking', cascade='all, delete-orphan') 
