@@ -90,12 +90,14 @@ guides = [
         name="Kenneth Mugume",
         experience="3 years",
         languages='Luganda',
+        fee=15000,
         rating=5,
         destination_id=7
     ),
     TourGuide(
         name="Robert Tumusiime",
         experience="4 years",
+        fee=12000,
         languages= 'Tooro',
         rating=4.6,
         destination_id=8
@@ -103,6 +105,7 @@ guides = [
     TourGuide(
         name="James Kimani",
         experience="5 years",
+        fee=10000,
         languages= 'Kikuyu',
         rating=4.7,
         destination_id=1
@@ -110,6 +113,7 @@ guides = [
     TourGuide(
         name="Aisha Mohammed",
         experience="3 years",
+        fee=10000,
         languages='Kiswahili',
         rating=4.5,
         destination_id=2
@@ -117,6 +121,7 @@ guides = [
     TourGuide(
         name="Peter Oloitok",
         experience="4 years",
+        fee=15000,
         languages= 'Maasai',
         rating=4.6,
         destination_id=5
@@ -124,6 +129,7 @@ guides = [
     TourGuide(
         name="Jacob Ojiambo",
         experience="2 years",
+        fee=5000,
         languages= 'Luhya',
         rating=4,
         destination_id=3
@@ -131,6 +137,7 @@ guides = [
     TourGuide(
         name="James Mukasa",
         experience="2 years",
+        fee=8000,
         languages='Luganda',
         rating=4,
         destination_id=7

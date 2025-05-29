@@ -9,7 +9,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     _name = Column("name", String, nullable=False)
-    _email = Column("email", String)
+    _email = Column("email", String, unique=True, nullable=False)
     
 
     bookings = relationship('Booking', back_populates='user')
@@ -45,11 +45,13 @@ class Booking(Base):
     people = Column(Integer)
     _price = Column("price", Float)
 
+    tour_guide_id = Column(Integer, ForeignKey('tour_guides.id'), nullable=True)
     destination_id = Column(Integer, ForeignKey('destinations.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
     
     user = relationship('User', back_populates='bookings')
     destination = relationship('Destination', back_populates='bookings')
+    tour_guide = relationship("TourGuide", back_populates="bookings")
 
     reviews=relationship('Review', back_populates='booking', cascade='all, delete-orphan') 
     #review and booking is one to many. A user can leave several reviews on one booking
@@ -106,14 +108,17 @@ class TourGuide(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     experience=Column(String)
+    fee = Column(Integer)
     languages = Column(String)
     rating=Column(Integer)
 
     destination_id=Column(Integer, ForeignKey('destinations.id'))
     
-    #A TourGuide belongs to one Destination
-    destination = relationship('Destination', back_populates='tour_guides')#one destination many tourguides
-   
+    #one destination many tourguides
+    destination = relationship('Destination', back_populates='tour_guides')
+    #several bookings one tour guide
+    bookings = relationship("Booking", back_populates="tour_guide")
+    
 
 class Destination(Base):
     __tablename__ = 'destinations'
