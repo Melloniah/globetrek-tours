@@ -334,6 +334,157 @@ def delete_booking(session):
         print("Failed to delete the booking:", e)
       
 
+#<---------REVIEWS CRUD------>
+
+# helper function for anonymous name in reviews
+for review in session.query(Review).all():
+    if review.name is None or review.name.strip().lower() == "none":
+        review.name = ""
+session.commit()
+print("✅ Anonymous reviews normalized to empty string.")
+
+def add_review(session):
+    print("\n📍 Available Destinations:")
+    destinations = session.query(Destination).all()
+    for dest in destinations:
+        print(f"{dest.id}. {dest.name} ({dest.location})")
+
+    try:
+        dest_id = int(input("\nEnter the ID of the destination you'd like to review: ").strip())
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return
+
+    destination = session.query(Destination).filter_by(id=dest_id).first()
+    if not destination:
+        print("Destination not found.")
+        return
+
+    name = input("Enter your name (Press Enter to stay anonymous): ").strip()
+    if not name:
+        name = "Anonymous"
+
+    comment = input("Leave a review: ").strip()
+    if not comment:
+        print("Review section cannot be empty.")
+        return
+
+    try:
+        rating = int(input("Please rate the destination (1 to 5): ").strip())
+        if rating < 1 or rating > 5:
+            print("Rating must be between 1 and 5.")
+            return
+    except ValueError:
+        print("Invalid rating. Please enter a number between 1 and 5.")
+        return    
+
+    review = Review(
+        name=name if name.lower() != "anonymous" else None,
+        comment=comment, 
+        rating=rating,
+        destination=destination
+    )
+
+    session.add(review)
+    session.commit()
+    print("✅ Review added!")
+
+def list_of_review(session):
+    print("\n📍 Available Destinations:")
+    destinations = session.query(Destination).all()
+    for dest in destinations:
+        print(f"{dest.id}. {dest.name} ({dest.location})")
+
+    try:
+        dest_id = int(input("\nEnter the ID of the destination you'd like to see reviews for: ").strip())
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return
+
+    destination = session.query(Destination).filter_by(id=dest_id).first()
+    if not destination:
+        print("Destination not found.")
+        return
+
+    reviews = destination.reviews
+
+    if not reviews:
+        print("There are currently no reviews left for this destination. Be the first to leave one!")
+        return
+
+    print(f"\n📋 Reviews for {destination.name}:\n")
+    for i, rev in enumerate(reviews, 1):
+        print(f"{i}. {rev.name or 'Anonymous'}: {rev.comment}")
+
+def update_review(session):
+    print("\n📍 Available Destinations:")
+    destinations = session.query(Destination).all()
+    for dest in destinations:
+        print(f"{dest.id}. {dest.name} ({dest.location})")
+
+    try:
+        dest_id = int(input("Enter the destination ID you reviewed: ").strip())
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return
+
+    name = input("Enter your name (used when submitting review): ").strip()
+    if name.lower() in ["anonymous", "none", ""]:
+        name_variants = ["", "None", None]
+        review = session.query(Review).filter(
+            Review.destination_id == dest_id,
+            Review.name.in_(name_variants)
+        ).first()
+    else:
+        review = session.query(Review).filter_by(name=name, destination_id=dest_id).first()
+
+    if not review:
+        print("Review not found.")
+        return
+
+    print(f"Previous review: {review.comment}")
+    new_comment = input("Enter your new comment: ").strip()
+
+    if not new_comment:
+        print("Updated review cannot be empty.")
+        return
+
+    review.comment = new_comment
+    session.commit()
+    print("✅ Review updated successfully!")
+
+def delete_review(session):
+    print("\n📍 Available Destinations:")
+    destinations = session.query(Destination).all()
+    for dest in destinations:
+        print(f"{dest.id}. {dest.name} ({dest.location})")
+
+    try:
+        dest_id = int(input("Enter the destination ID you reviewed: ").strip())
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return
+
+    name = input("Enter your name (used when submitting review): ").strip()
+    if name.lower() in ["anonymous", "none", ""]:
+        name_variants = ["", "None", None]
+        review = session.query(Review).filter(
+            Review.destination_id == dest_id,
+            Review.name.in_(name_variants)
+        ).first()
+    else:
+        review = session.query(Review).filter_by(name=name, destination_id=dest_id).first()
+
+    if not review:
+        print("Review not found.")
+        return                      
+
+    session.delete(review)
+    session.commit()
+    print("✅ Your review has been deleted successfully.")
+
+
+
 
 
 # Main menu for CLI
@@ -347,6 +498,10 @@ def main_menu():
         print("5. View bookings")
         print("6. Update bookings")
         print("7. Delete bookings")
+        print("8. Add reviews")
+        print("9. List reviews")
+        print("10. Edit reviews")
+        print("11. Delete reviews")
 
         choice = input("Enter your choice: ")
 
@@ -365,6 +520,14 @@ def main_menu():
         elif choice == "7":
             delete_booking(session)
         elif choice == "8":
+            add_review(session)  
+        elif choice == "9":
+            list_of_review(session)   
+        elif choice == "10":
+            update_review(session) 
+        elif choice == "11":
+            delete_review(session)              
+        elif choice == "12":
             print(f"GoodBye")             
             break
         else:
