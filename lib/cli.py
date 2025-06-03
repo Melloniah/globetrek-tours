@@ -136,6 +136,7 @@ def book_destination(session):
 
         # Create booking record
         new_booking = Booking(
+            name=name,
             user_id=user.id,
             destination_id=destination.id,
             email=email,
@@ -489,7 +490,7 @@ def delete_review(session):
 # Main menu for CLI
 def main_menu():
     while True:
-        print("\n--- TOUR BOOKING SYSTEM ---")
+        print("\n--- WELCOME TO GLOBETREK TOURS AND TOURGUIDE  BOOKING SYSTEM ---")
         print("1. View all destinations")
         print("2. Filter destinations by location")
         print("3. Make a new booking")
