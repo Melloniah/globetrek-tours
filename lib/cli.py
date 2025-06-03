@@ -502,6 +502,7 @@ def main_menu():
         print("9. List reviews")
         print("10. Edit reviews")
         print("11. Delete reviews")
+        print("12. Exit")
 
         choice = input("Enter your choice: ")
 

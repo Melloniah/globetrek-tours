@@ -32,8 +32,11 @@ This is a command-line based Tour Booking Application built with Python, SQLAlch
 - Reviews:
   - Can be left anonymously or with a name
   - Include a rating and a comment
-- Admin features (optional):
-  - View all users/bookings/reviews
+  - The user can also update, view reiviews and delete reviews for a particular destination.
+  The user while interacting with the cli, they can view all users/bookings/reviews
+-Destination:
+   -A user can click to view all destinations
+   -A user can filter destination by location too
 
 ---
 
