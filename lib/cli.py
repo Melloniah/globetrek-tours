@@ -386,10 +386,10 @@ def add_review(session):
 
     session.add(review)
     session.commit()
-    print("✅ Review added!")
+    print(" Review added!")
 
 def list_of_review(session):
-    print("\n📍 Available Destinations:")
+    print("\n Available Destinations:")
     destinations = session.query(Destination).all()
     for dest in destinations:
         print(f"{dest.id}. {dest.name} ({dest.location})")
@@ -411,12 +411,12 @@ def list_of_review(session):
         print("There are currently no reviews left for this destination. Be the first to leave one!")
         return
 
-    print(f"\n📋 Reviews for {destination.name}:\n")
+    print(f"\n Reviews for {destination.name}:\n")
     for i, rev in enumerate(reviews, 1):
         print(f"{i}. {rev.name or 'Anonymous'}: {rev.comment}")
 
 def update_review(session):
-    print("\n📍 Available Destinations:")
+    print("\n Available Destinations:")
     destinations = session.query(Destination).all()
     for dest in destinations:
         print(f"{dest.id}. {dest.name} ({dest.location})")
@@ -450,10 +450,10 @@ def update_review(session):
 
     review.comment = new_comment
     session.commit()
-    print("✅ Review updated successfully!")
+    print("Review updated successfully!")
 
 def delete_review(session):
-    print("\n📍 Available Destinations:")
+    print("\n Available Destinations:")
     destinations = session.query(Destination).all()
     for dest in destinations:
         print(f"{dest.id}. {dest.name} ({dest.location})")
@@ -480,7 +480,7 @@ def delete_review(session):
 
     session.delete(review)
     session.commit()
-    print("✅ Your review has been deleted successfully.")
+    print(" Your review has been deleted successfully.")
 
 
 
