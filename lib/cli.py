@@ -73,21 +73,21 @@ def book_destination(session):
     
 
     try:
-        # Step 1: Select destination
+        # Select destination
         dest_id = input("Please enter the ID of the destination you would like to book: ").strip()
         destination = session.query(Destination).filter_by(id=int(dest_id)).first()
         if not destination:
             print("Destination not found.")
             return
 
-        # Step 2: Identify user by email and name
+        # Identify user by email and name
         email = input("Please enter a valid email: ").strip().lower()
         name = input("Please enter your name: ").strip()
 
-        # Step 3: Get or create user
+        # Get or create user
         user = get_or_create_user(session, name, email)
 
-        # Step 4: Ask for travel date
+        # Ask for travel date
         date_str = input("Please input the date you would like to travel (DD-MM-YYYY): ").strip()
         try:
             travel_date = datetime.strptime(date_str, "%d-%m-%Y").date()
@@ -95,7 +95,7 @@ def book_destination(session):
             print("Invalid date format. Please use DD-MM-YYYY.")
             return
 
-        # Step 5: Ask for number of people
+        # Ask for number of people
         try:
             people = int(input("Please input the number of people travelling: ").strip())
             if people < 1:
@@ -107,7 +107,7 @@ def book_destination(session):
 
         print("Note: Price shown on destination is per person.\n")
 
-        # Step 6: Tour guide logic
+        # Tour guide logic asking if the user wants a tour guide
         wants_guide = input("Would you like a tour guide for this trip? (yes/no): ").strip().lower()
         selected_guide = None
 
@@ -129,12 +129,12 @@ def book_destination(session):
             else:
                 print("Sorry, there are no tour guides available for this destination.")
 
-        # Step 7: Calculate total cost
+        #  Calculate total cost plus adding a tour guide or not
         base_cost = destination.price * people
         guide_fee = selected_guide.fee if selected_guide else 0
         total_price = base_cost + guide_fee
 
-        # Step 8: Create booking record
+        # Create booking record
         new_booking = Booking(
             user_id=user.id,
             destination_id=destination.id,
@@ -147,7 +147,7 @@ def book_destination(session):
         session.add(new_booking)
         session.commit()
 
-        # Step 9: Confirm booking
+        # Confirm booking
         print(f"\n🎉 Booking confirmed for {destination.name} on {travel_date} for {people} people!")
         print(" Breakdown:")
         print(f" - Base cost (Ksh {destination.price} x {people}): Ksh {base_cost}")
@@ -162,12 +162,11 @@ def book_destination(session):
 def view_user_bookings(session):
     email = input("Enter your email to view your bookings: ").strip().lower()
 
-    # Use ilike for case-insensitive search
+    # ilike for case-insensitive search
     user = session.query(User).filter(User._email.ilike(email)).first()
 
     if not user:
         print("No user found with that email.")
-        # Debug: List all emails in DB to check what's stored
         print("Current emails in system:")
         for u in session.query(User).all():
             print(f" - {u.email}")
@@ -341,7 +340,7 @@ for review in session.query(Review).all():
     if review.name is None or review.name.strip().lower() == "none":
         review.name = ""
 session.commit()
-print("✅ Anonymous reviews normalized to empty string.")
+
 
 def add_review(session):
     print("\n📍 Available Destinations:")

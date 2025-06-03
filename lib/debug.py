@@ -20,5 +20,5 @@ for user in users:
 
 
 # Filter destinations by price
-cheap = session.query(Destination).filter(Destination.price < 30000).all()
+cheap = session.query(Destination).filter(Destination._price < 30000).all()
 print(cheap)
